@@ -71,12 +71,13 @@ while True:
             print(db.get(nameKey["name"]))
         elif not matches[matchIndex]:
             name = 'Unknown'
-
             y1,x2,y2,x1 = faceloc
+
             y1, x2, y2, x1 = y1 * 4, x2 * 4, y2 * 4, x1 * 4  # 출력 프레임에 오버레이 하기 위해 4를 곱함.
-            cv2.rectangle(img, (x1, y1), (x2, y2), (220,20,60), 2)
-            cv2.rectangle(img, (x1, y2 - 35), (x2, y2), (220,20,60), cv2.FILLED)
-            cv2.putText(img, name, (x1 + 6, y2 - 5), cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,0), 2)
+            cv2.rectangle(img, (x1, y1), (x2, y2), (0,0,255), 2)
+            cv2.rectangle(img, (x1, y2 - 35), (x2, y2), (0,0,255), cv2.FILLED)
+            cv2.putText(img, name, (x1 + 6, y2 - 5), cv2.FONT_HERSHEY_COMPLEX, 1, (255,255,255), 2)
+            print(name)
     cv2.imshow('webcam', img)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
