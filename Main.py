@@ -4,8 +4,10 @@ import os
 import numpy as np
 from datetime import datetime
 import pickle
+from testFuntion import*
 
-# 훈련 데이터 폴더 정의
+db = testFuntion()
+# 훈련 데이터 폴더 정의.
 path = "student"
 
 # 훈련 데이터 이미지를 배열에 저장하고 classNames에 파일 이름을 추가.
@@ -45,6 +47,7 @@ def markAttendance(name):
 # Webcam에서 영상을 받아온 후 저장. (카메라 열기)
 cap  = cv2.VideoCapture(0)
 while True:
+    found = False
     success, img = cap.read()
     imgS = cv2.resize(img, (0,0), None, 0.25,0.25)  # 인식 부분에만 크기를 1/4로 조정. (초당 프레임 향상 효과)
     imgS = cv2.cvtColor(imgS, cv2.COLOR_BGR2RGB)
@@ -54,7 +57,6 @@ while True:
         matches = face_recognition.compare_faces(encoded_face_train, encode_face)
         faceDist = face_recognition.face_distance(encoded_face_train, encode_face)
         matchIndex = np.argmin(faceDist)
-        print(matchIndex)
         if matches[matchIndex]:
             name = classNames[matchIndex].upper().lower()
             y1,x2,y2,x1 = faceloc
@@ -64,6 +66,17 @@ while True:
             cv2.rectangle(img, (x1,y2-35),(x2,y2), (0,255,0), cv2.FILLED)
             cv2.putText(img,name, (x1+6,y2-5), cv2.FONT_HERSHEY_COMPLEX,1,(255,255,255),2)
             markAttendance(name)
+            print(name)
+            nameKey = db.set(name)
+            print(db.get(nameKey["name"]))
+        elif not matches[matchIndex]:
+            name = 'Unknown'
+
+            y1,x2,y2,x1 = faceloc
+            y1, x2, y2, x1 = y1 * 4, x2 * 4, y2 * 4, x1 * 4  # 출력 프레임에 오버레이 하기 위해 4를 곱함.
+            cv2.rectangle(img, (x1, y1), (x2, y2), (220,20,60), 2)
+            cv2.rectangle(img, (x1, y2 - 35), (x2, y2), (220,20,60), cv2.FILLED)
+            cv2.putText(img, name, (x1 + 6, y2 - 5), cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,0), 2)
     cv2.imshow('webcam', img)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
