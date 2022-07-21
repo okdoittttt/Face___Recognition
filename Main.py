@@ -69,8 +69,8 @@ while True:
             cv2.putText(img,name, (x1+6,y2-5), cv2.FONT_HERSHEY_COMPLEX,1,(255,255,255),2)
             markAttendance(name)
             print(name)
-            nameKey = db.set(name)
-            print(db.get(nameKey["name"]))
+            # nameKey = db.set(name)
+            # print(db.get(nameKey["name"]))
         elif not matches[matchIndex]:
             name = 'Unknown'
             y1,x2,y2,x1 = faceloc
@@ -79,6 +79,9 @@ while True:
             cv2.rectangle(img, (x1, y1), (x2, y2), (0,0,255), 2)
             cv2.rectangle(img, (x1, y2 - 35), (x2, y2), (0,0,255), cv2.FILLED)
             cv2.putText(img, name, (x1 + 6, y2 - 5), cv2.FONT_HERSHEY_COMPLEX, 1, (255,255,255), 2)
+            capImg = cv2.imwrite('unknown.jpg', img)
+            test = 'unknown.jpg'
+            tele.sendImg(test)
             print(name)
             tele.sendMessege()
     cv2.imshow('webcam', img)
