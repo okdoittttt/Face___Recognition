@@ -5,8 +5,10 @@ import numpy as np
 from datetime import datetime
 import pickle
 from testFuntion import*
+from Telegram import *
 
 db = testFuntion()
+tele = Sendtelegram()
 # 훈련 데이터 폴더 정의.
 path = "student"
 
@@ -78,6 +80,7 @@ while True:
             cv2.rectangle(img, (x1, y2 - 35), (x2, y2), (0,0,255), cv2.FILLED)
             cv2.putText(img, name, (x1 + 6, y2 - 5), cv2.FONT_HERSHEY_COMPLEX, 1, (255,255,255), 2)
             print(name)
+            tele.sendMessege()
     cv2.imshow('webcam', img)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
