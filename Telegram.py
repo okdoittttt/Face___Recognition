@@ -17,4 +17,6 @@ class Sendtelegram:
     def sendImg(self, img):
         bot = telegram.Bot(self.chat_token)
         bot.send_photo(chat_id = '5526673347', photo=open(img, 'rb'))
+        text = '등록되지 않은 사람이 인식되었습니다.'
+        bot.sendMessage(chat_id = "5526673347", text=text)
 

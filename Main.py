@@ -3,12 +3,14 @@ import face_recognition
 import os
 import numpy as np
 from datetime import datetime
-import pickle
-from testFuntion import*
 from Telegram import *
+from firebase_database import *
+import pickle
 
-db = testFuntion()
+# class 정의
+db = firebase_database(60)
 tele = Sendtelegram()
+
 # 훈련 데이터 폴더 정의.
 path = "student"
 
@@ -49,7 +51,6 @@ def markAttendance(name):
 # Webcam에서 영상을 받아온 후 저장. (카메라 열기)
 cap  = cv2.VideoCapture(0)
 while True:
-    found = False
     success, img = cap.read()
     imgS = cv2.resize(img, (0,0), None, 0.25,0.25)  # 인식 부분에만 크기를 1/4로 조정. (초당 프레임 향상 효과)
     imgS = cv2.cvtColor(imgS, cv2.COLOR_BGR2RGB)
@@ -59,6 +60,7 @@ while True:
         matches = face_recognition.compare_faces(encoded_face_train, encode_face)
         faceDist = face_recognition.face_distance(encoded_face_train, encode_face)
         matchIndex = np.argmin(faceDist)
+        # 얼굴인식에 성공.
         if matches[matchIndex]:
             name = classNames[matchIndex].upper().lower()
             y1,x2,y2,x1 = faceloc
@@ -69,8 +71,8 @@ while True:
             cv2.putText(img,name, (x1+6,y2-5), cv2.FONT_HERSHEY_COMPLEX,1,(255,255,255),2)
             markAttendance(name)
             print(name)
-            # nameKey = db.set(name)
-            # print(db.get(nameKey["name"]))
+            nameKey = db.set(name)
+        # 얼굴 인식에 실패.
         elif not matches[matchIndex]:
             name = 'Unknown'
             y1,x2,y2,x1 = faceloc
@@ -79,11 +81,13 @@ while True:
             cv2.rectangle(img, (x1, y1), (x2, y2), (0,0,255), 2)
             cv2.rectangle(img, (x1, y2 - 35), (x2, y2), (0,0,255), cv2.FILLED)
             cv2.putText(img, name, (x1 + 6, y2 - 5), cv2.FONT_HERSHEY_COMPLEX, 1, (255,255,255), 2)
+            print(name)
+
+            # 등록되지 않은 사용자 telegram 메시지 전송하기
             capImg = cv2.imwrite('unknown.jpg', img)
             test = 'unknown.jpg'
             tele.sendImg(test)
-            print(name)
-            tele.sendMessege()
+
     cv2.imshow('webcam', img)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
